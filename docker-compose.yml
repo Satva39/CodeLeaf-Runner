@@ -1,0 +1,93 @@
+name: codeleaf-runner
+
+services:
+  redis:
+    image: redis:7.4-alpine
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --appendfsync
+      - everysec
+      - --maxmemory
+      - 512mb
+      - --maxmemory-policy
+      - noeviction
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  # Piston is deliberately isolated from the public Internet-facing API.
+  # Piston itself requires privileged access to set up Isolate/cgroups.
+  # Run this container only on a dedicated Linux runner host, never beside
+  # CodeLeaf's main API, database, or credential-bearing application services.
+  piston:
+    image: ${PISTON_IMAGE:-ghcr.io/engineer-man/piston:latest}
+    privileged: true
+    environment:
+      PISTON_DISABLE_NETWORKING: "true"
+      PISTON_MAX_PROCESS_COUNT: "64"
+      PISTON_OUTPUT_MAX_SIZE: ${PISTON_OUTPUT_MAX_SIZE:-16384}
+      PISTON_MAX_OPEN_FILES: "64"
+      PISTON_MAX_FILE_SIZE: "10000000"
+      PISTON_COMPILE_TIMEOUT: ${PISTON_COMPILE_TIMEOUT_MS:-10000}
+      PISTON_RUN_TIMEOUT: ${PISTON_RUN_TIMEOUT_MS:-3000}
+      PISTON_COMPILE_CPU_TIME: ${PISTON_COMPILE_CPU_TIME_MS:-10000}
+      PISTON_RUN_CPU_TIME: ${PISTON_RUN_CPU_TIME_MS:-3000}
+      PISTON_COMPILE_MEMORY_LIMIT: ${PISTON_COMPILE_MEMORY_LIMIT_BYTES:-268435456}
+      PISTON_RUN_MEMORY_LIMIT: ${PISTON_RUN_MEMORY_LIMIT_BYTES:-134217728}
+      PISTON_MAX_CONCURRENT_JOBS: ${PISTON_MAX_CONCURRENT_JOBS:-2}
+    volumes:
+      - piston_data:/piston
+    # Loopback-only admin access is used by the Piston package installer script.
+    # Do not change this to 0.0.0.0 or expose port 2000 through a public proxy.
+    ports:
+      - "127.0.0.1:2000:2000"
+    expose:
+      - "2000"
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      PISTON_BASE_URL: http://piston:2000
+    depends_on:
+      redis:
+        condition: service_healthy
+      piston:
+        condition: service_started
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    command: ["python", "-m", "app.worker"]
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      PISTON_BASE_URL: http://piston:2000
+    depends_on:
+      redis:
+        condition: service_healthy
+      piston:
+        condition: service_started
+    restart: unless-stopped
+    stop_grace_period: 20s
+
+volumes:
+  redis_data:
+  piston_data:

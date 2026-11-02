@@ -11,11 +11,16 @@ class FakeClaimRedis:
         self.status = status
         self.calls = 0
 
-    async def eval(self, script, number_of_keys, job_key, now):
+    async def eval(self, script, number_of_keys, job_key, lease_key, now, worker_id, lease_seconds):
         assert script == CLAIM_JOB_LUA
-        assert number_of_keys == 1
+        assert number_of_keys == 2
         assert job_key.endswith("00000000-0000-4000-8000-000000000001")
+        assert lease_key.endswith("00000000-0000-4000-8000-000000000001")
+        assert worker_id == "worker"
+        assert lease_seconds >= 90
         self.calls += 1
+        if self.status == "busy":
+            return ["busy", "", ""]
         if self.status not in {"queued", "running"}:
             return [self.status, "", ""]
         self.status = "running"
@@ -72,3 +77,9 @@ def test_stream_acknowledgement_and_deletion_share_one_transaction():
     asyncio.run(acknowledge_and_delete(redis, "1750000000000-0"))
     assert redis.pipe.transaction is True
     assert [operation[0] for operation in redis.pipe.operations] == ["xack", "xdel"]
+
+
+def test_job_claim_respects_active_worker_lease():
+    redis = FakeClaimRedis("busy")
+    job = asyncio.run(set_job_running(redis, "00000000-0000-4000-8000-000000000001"))
+    assert job == {"status": "busy", "payload": None}

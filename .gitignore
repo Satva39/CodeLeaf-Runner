@@ -13,3 +13,6 @@ htmlcov/
 .vscode/
 .DS_Store
 vendor/
+
+# Generated runtime install/verification reports
+runtime-reports/

@@ -93,13 +93,21 @@ return {status}
 
 CLAIM_JOB_LUA = r"""
 local job_key = KEYS[1]
+local lease_key = KEYS[2]
 local now = ARGV[1]
+local worker_id = ARGV[2]
+local lease_seconds = tonumber(ARGV[3])
 local status = redis.call('HGET', job_key, 'status')
 if not status then return {'missing', '', ''} end
 if status ~= 'queued' and status ~= 'running' then return {status, '', ''} end
+local current_lease = redis.call('GET', lease_key)
+if current_lease then return {'busy', '', ''} end
+local acquired = redis.call('SET', lease_key, worker_id, 'NX', 'EX', lease_seconds)
+if not acquired then return {'busy', '', ''} end
 local payload = redis.call('HGET', job_key, 'payload_json') or '{}'
 local owner_id = redis.call('HGET', job_key, 'owner_id') or ''
-redis.call('HSET', job_key, 'status', 'running', 'updated_at', now)
+redis.call('HSET', job_key, 'status', 'running', 'updated_at', now, 'worker_id', worker_id)
+redis.call('HINCRBY', job_key, 'attempts', 1)
 return {'running', payload, owner_id}
 """
 
@@ -220,14 +228,19 @@ async def cancel_job(redis: Any, job_id: str, owner_id: str) -> str | None:
     return str(result[0])
 
 
-async def set_job_running(redis: Any, job_id: str) -> dict[str, Any] | None:
+async def set_job_running(
+    redis: Any, job_id: str, *, worker_id: str = "worker", lease_seconds: int = 105
+) -> dict[str, Any] | None:
     # Claim queued jobs atomically with cancellation. This prevents a worker from
     # starting a job after the API has already confirmed that it was cancelled.
     result = await redis.eval(
         CLAIM_JOB_LUA,
-        1,
+        2,
         f"codeleaf:runner:job:{job_id}",
+        f"codeleaf:runner:job-lease:{job_id}",
         now_iso(),
+        worker_id,
+        lease_seconds,
     )
     state = str(result[0]) if result else "missing"
     if state == "missing":
@@ -264,5 +277,6 @@ async def finish_job(
         },
     )
     pipe.srem(f"codeleaf:runner:owner-active:{owner_id}", job_id)
+    pipe.delete(f"codeleaf:runner:job-lease:{job_id}")
     pipe.expire(job_key, ttl_seconds)
     await pipe.execute()

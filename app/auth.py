@@ -13,11 +13,21 @@ def valid_service_key(provided: str, expected: str) -> bool:
     return len(expected) >= 32 and bool(provided) and hmac.compare_digest(provided, expected)
 
 
+def valid_any_service_key(provided: str, settings=None) -> bool:
+    settings = settings or get_settings()
+    matched = False
+    # Evaluate all configured keys instead of returning early, preserving a
+    # constant-time comparison for each candidate during planned token rotation.
+    for expected in settings.service_tokens:
+        matched = hmac.compare_digest(provided or "", expected) or matched
+    return bool(provided) and settings.service_token_ready and matched
+
+
 def require_runner_key(
     x_runner_key: str = Header(default="", alias="X-Runner-Key"),
 ) -> None:
-    expected = get_settings().token_value
-    if not valid_service_key(x_runner_key, expected):
+    settings = get_settings()
+    if not valid_any_service_key(x_runner_key, settings):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Runner service authentication failed.",

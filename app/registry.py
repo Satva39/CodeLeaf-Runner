@@ -83,5 +83,7 @@ def public_language(entry: dict[str, Any], runtime: dict[str, Any] | None) -> di
         "piston_language": entry["piston_language"],
         "available": runtime is not None,
         "installed_version": runtime.get("version") if runtime else None,
+        "runtime_language": runtime.get("language") if runtime else None,
+        "runtime_kind": runtime.get("runtime") if runtime else None,
         "aliases": entry["aliases"],
     }

@@ -86,3 +86,23 @@ def test_runner_environment_variables_use_documented_prefix(monkeypatch) -> None
     assert settings.max_jobs_per_minute == 11
     assert settings.worker_concurrency == 4
     assert settings.job_ttl_seconds == 1800
+
+
+def test_registry_maps_c_cpp_and_csharp_package_aliases():
+    assert resolve_language("gcc")["key"] == "c"
+    assert resolve_language("g++")["key"] == "cpp"
+    assert resolve_language("dotnet")["key"] == "csharp"
+
+
+def test_create_job_supports_expanded_multi_file_limits():
+    request = CreateJobRequest(
+        language="python",
+        files=[{"name": f"module_{index}.py", "content": f"VALUE_{index} = {index}"} for index in range(1, 26)],
+    )
+    _, payload = prepare_payload(request, Settings())
+    assert len(payload["files"]) == 25
+    with pytest.raises(ValidationError):
+        CreateJobRequest(
+            language="python",
+            files=[{"name": f"module_{index}.py", "content": "x"} for index in range(1, 27)],
+        )

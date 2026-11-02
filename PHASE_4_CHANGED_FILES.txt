@@ -1,0 +1,22 @@
+CodeLeaf Runner — Phase 4
+Changed/added files only. Extract into the existing CodeLeaf-Runner project root.
+Preserve .env and config/runtime-lock.json.
+
+.env.example
+README.md
+app/config.py
+app/database_execution.py
+app/database_jobs.py
+app/database_models.py
+app/database_worker.py
+app/docker_engine.py
+app/main.py
+app/sql_validation.py
+docker-compose.yml
+docs/API.md
+docs/PHASE_4_CHECKLIST.md
+docs/SECURITY.md
+pyproject.toml
+requirements.txt
+scripts/smoke_test_database_engines.py
+tests/test_database_phase.py

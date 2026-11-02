@@ -2,7 +2,7 @@ name: codeleaf-runner
 
 services:
   redis:
-    image: redis:7.4-alpine
+    image: ${REDIS_IMAGE:-redis:7.4-alpine}
     command:
       - redis-server
       - --appendonly
@@ -13,8 +13,12 @@ services:
       - 512mb
       - --maxmemory-policy
       - noeviction
+    mem_limit: 768m
+    cpus: 1.0
+    pids_limit: 128
     volumes:
       - redis_data:/data
+    networks: [runner-internal]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -22,45 +26,114 @@ services:
       retries: 20
     restart: unless-stopped
 
-  # Piston is deliberately isolated from the public Internet-facing API.
-  # Piston itself requires privileged access to set up Isolate/cgroups.
-  # Run this container only on a dedicated Linux runner host, never beside
-  # CodeLeaf's main API, database, or credential-bearing application services.
+  # Piston requires privileged access to initialize Isolate/cgroups. Keep this
+  # service on a dedicated Linux runner host with no production credentials.
   piston:
     image: ${PISTON_IMAGE:-ghcr.io/engineer-man/piston:latest}
     privileged: true
+    mem_limit: ${PISTON_CONTAINER_MEMORY_LIMIT:-4g}
+    cpus: ${PISTON_CONTAINER_CPU_LIMIT:-4.0}
+    pids_limit: 512
     environment:
       PISTON_DISABLE_NETWORKING: "true"
       PISTON_MAX_PROCESS_COUNT: "64"
-      PISTON_OUTPUT_MAX_SIZE: ${PISTON_OUTPUT_MAX_SIZE:-16384}
-      PISTON_MAX_OPEN_FILES: "64"
+      PISTON_OUTPUT_MAX_SIZE: ${PISTON_OUTPUT_MAX_SIZE:-65536}
+      PISTON_MAX_OPEN_FILES: "1024"
       PISTON_MAX_FILE_SIZE: "10000000"
-      PISTON_COMPILE_TIMEOUT: ${PISTON_COMPILE_TIMEOUT_MS:-10000}
+      PISTON_COMPILE_TIMEOUT: ${PISTON_COMPILE_TIMEOUT_MS:-30000}
       PISTON_RUN_TIMEOUT: ${PISTON_RUN_TIMEOUT_MS:-3000}
-      PISTON_COMPILE_CPU_TIME: ${PISTON_COMPILE_CPU_TIME_MS:-10000}
+      PISTON_COMPILE_CPU_TIME: ${PISTON_COMPILE_CPU_TIME_MS:-30000}
       PISTON_RUN_CPU_TIME: ${PISTON_RUN_CPU_TIME_MS:-3000}
-      PISTON_COMPILE_MEMORY_LIMIT: ${PISTON_COMPILE_MEMORY_LIMIT_BYTES:-268435456}
+      PISTON_COMPILE_MEMORY_LIMIT: ${PISTON_COMPILE_MEMORY_LIMIT_BYTES:-536870912}
       PISTON_RUN_MEMORY_LIMIT: ${PISTON_RUN_MEMORY_LIMIT_BYTES:-134217728}
       PISTON_MAX_CONCURRENT_JOBS: ${PISTON_MAX_CONCURRENT_JOBS:-2}
     volumes:
       - piston_data:/piston
-    # Loopback-only admin access is used by the Piston package installer script.
-    # Do not change this to 0.0.0.0 or expose port 2000 through a public proxy.
-    ports:
-      - "127.0.0.1:2000:2000"
     expose:
       - "2000"
+    networks: [runner-internal]
     restart: unless-stopped
 
+  # Opt-in, temporary host access for installing Piston packages. It is not
+  # started in the normal stack; stop it immediately after an admin operation.
+  piston-admin:
+    image: ${PISTON_ADMIN_IMAGE:-alpine/socat:latest}
+    command: ["TCP-LISTEN:2000,fork,reuseaddr", "TCP:piston:2000"]
+    ports:
+      - "127.0.0.1:2000:2000"
+    user: "65534:65534"
+    read_only: true
+    mem_limit: 32m
+    cpus: 0.1
+    pids_limit: 8
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    networks: [runner-internal]
+    depends_on:
+      piston:
+        condition: service_started
+    profiles: ["runtime-admin"]
+    restart: "no"
+
   api:
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--limit-concurrency", "128", "--backlog", "256", "--timeout-keep-alive", "5"]
     build:
       context: .
       dockerfile: Dockerfile
-    env_file:
-      - .env
+      args:
+        RUNNER_PYTHON_BASE_IMAGE: ${RUNNER_PYTHON_BASE_IMAGE:-python:3.12-slim}
     environment:
+      CODELEAF_RUNNER_SERVICE_TOKEN: ${CODELEAF_RUNNER_SERVICE_TOKEN:?Set CODELEAF_RUNNER_SERVICE_TOKEN to a random secret of at least 32 characters}
+      CODELEAF_RUNNER_PREVIOUS_SERVICE_TOKEN: ${CODELEAF_RUNNER_PREVIOUS_SERVICE_TOKEN:-}
       REDIS_URL: redis://redis:6379/0
       PISTON_BASE_URL: http://piston:2000
+      RUNNER_MAX_QUEUE_DEPTH: ${RUNNER_MAX_QUEUE_DEPTH:-250}
+      RUNNER_MAX_ACTIVE_PER_USER: ${RUNNER_MAX_ACTIVE_PER_USER:-2}
+      RUNNER_MAX_JOBS_PER_MINUTE: ${RUNNER_MAX_JOBS_PER_MINUTE:-8}
+      RUNNER_JOB_TTL_SECONDS: ${RUNNER_JOB_TTL_SECONDS:-86400}
+      RUNNER_REQUESTS_PER_MINUTE_PER_IP: ${RUNNER_REQUESTS_PER_MINUTE_PER_IP:-3000}
+      RUNNER_REQUEST_RATE_WINDOW_SECONDS: ${RUNNER_REQUEST_RATE_WINDOW_SECONDS:-60}
+      RUNNER_MAX_API_BODY_BYTES: ${RUNNER_MAX_API_BODY_BYTES:-2097152}
+      RUNNER_PRODUCTION_MODE: ${RUNNER_PRODUCTION_MODE:-false}
+      RUNNER_ALLOWED_WEBSOCKET_ORIGINS: ${RUNNER_ALLOWED_WEBSOCKET_ORIGINS:-}
+      RUNNER_WEBSOCKET_CONNECTIONS_PER_MINUTE_PER_IP: ${RUNNER_WEBSOCKET_CONNECTIONS_PER_MINUTE_PER_IP:-600}
+      RUNNER_MAX_INTERACTIVE_SESSIONS_PER_USER: ${RUNNER_MAX_INTERACTIVE_SESSIONS_PER_USER:-1}
+      INTERACTIVE_INIT_TIMEOUT_SECONDS: ${INTERACTIVE_INIT_TIMEOUT_SECONDS:-5}
+      INTERACTIVE_INPUT_IDLE_TIMEOUT_SECONDS: ${INTERACTIVE_INPUT_IDLE_TIMEOUT_SECONDS:-90}
+      INTERACTIVE_MAX_SESSION_SECONDS: ${INTERACTIVE_MAX_SESSION_SECONDS:-120}
+      INTERACTIVE_SESSION_TTL_SECONDS: ${INTERACTIVE_SESSION_TTL_SECONDS:-180}
+      INTERACTIVE_MAX_MESSAGE_BYTES: ${INTERACTIVE_MAX_MESSAGE_BYTES:-32768}
+      INTERACTIVE_MAX_INPUT_MESSAGE_BYTES: ${INTERACTIVE_MAX_INPUT_MESSAGE_BYTES:-16384}
+      INTERACTIVE_MAX_TOTAL_INPUT_BYTES: ${INTERACTIVE_MAX_TOTAL_INPUT_BYTES:-65536}
+      INTERACTIVE_MAX_OUTPUT_BYTES: ${INTERACTIVE_MAX_OUTPUT_BYTES:-65536}
+      INTERACTIVE_MAX_MESSAGES: ${INTERACTIVE_MAX_MESSAGES:-256}
+      PISTON_COMPILE_TIMEOUT_MS: ${PISTON_COMPILE_TIMEOUT_MS:-30000}
+      PISTON_RUN_TIMEOUT_MS: ${PISTON_RUN_TIMEOUT_MS:-3000}
+      PISTON_COMPILE_CPU_TIME_MS: ${PISTON_COMPILE_CPU_TIME_MS:-30000}
+      PISTON_RUN_CPU_TIME_MS: ${PISTON_RUN_CPU_TIME_MS:-3000}
+      PISTON_COMPILE_MEMORY_LIMIT_BYTES: ${PISTON_COMPILE_MEMORY_LIMIT_BYTES:-536870912}
+      PISTON_RUN_MEMORY_LIMIT_BYTES: ${PISTON_RUN_MEMORY_LIMIT_BYTES:-134217728}
+      PISTON_OUTPUT_MAX_SIZE: ${PISTON_OUTPUT_MAX_SIZE:-65536}
+      PISTON_HTTP_TIMEOUT_SECONDS: ${PISTON_HTTP_TIMEOUT_SECONDS:-45}
+      PISTON_CONNECT_TIMEOUT_SECONDS: ${PISTON_CONNECT_TIMEOUT_SECONDS:-3}
+      DATABASE_EXECUTION_ENABLED: ${DATABASE_EXECUTION_ENABLED:-true}
+      RUNNER_DATABASE_MAX_QUERY_BYTES: ${RUNNER_DATABASE_MAX_QUERY_BYTES:-65536}
+      RUNNER_DATABASE_MAX_SETUP_BYTES: ${RUNNER_DATABASE_MAX_SETUP_BYTES:-131072}
+      RUNNER_DATABASE_MAX_ROWS: ${RUNNER_DATABASE_MAX_ROWS:-100}
+      RUNNER_DATABASE_MAX_RESULT_BYTES: ${RUNNER_DATABASE_MAX_RESULT_BYTES:-65536}
+      RUNNER_DATABASE_MAX_ACTIVE_PER_USER: ${RUNNER_DATABASE_MAX_ACTIVE_PER_USER:-2}
+      RUNNER_DATABASE_JOBS_PER_MINUTE: ${RUNNER_DATABASE_JOBS_PER_MINUTE:-6}
+      RUNNER_DATABASE_MAX_QUEUE_DEPTH: ${RUNNER_DATABASE_MAX_QUEUE_DEPTH:-100}
+      RUNNER_DATABASE_JOB_TTL_SECONDS: ${RUNNER_DATABASE_JOB_TTL_SECONDS:-86400}
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 128
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=32m
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    networks: [runner-internal]
     depends_on:
       redis:
         condition: service_healthy
@@ -68,18 +141,42 @@ services:
         condition: service_started
     ports:
       - "127.0.0.1:8080:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health/live', timeout=2)"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
     restart: unless-stopped
 
   worker:
     build:
       context: .
       dockerfile: Dockerfile
-    env_file:
-      - .env
+      args:
+        RUNNER_PYTHON_BASE_IMAGE: ${RUNNER_PYTHON_BASE_IMAGE:-python:3.12-slim}
     command: ["python", "-m", "app.worker"]
     environment:
       REDIS_URL: redis://redis:6379/0
       PISTON_BASE_URL: http://piston:2000
+      RUNNER_WORKER_CONCURRENCY: ${RUNNER_WORKER_CONCURRENCY:-2}
+      RUNNER_JOB_TTL_SECONDS: ${RUNNER_JOB_TTL_SECONDS:-86400}
+      PISTON_COMPILE_TIMEOUT_MS: ${PISTON_COMPILE_TIMEOUT_MS:-30000}
+      PISTON_RUN_TIMEOUT_MS: ${PISTON_RUN_TIMEOUT_MS:-3000}
+      PISTON_COMPILE_CPU_TIME_MS: ${PISTON_COMPILE_CPU_TIME_MS:-30000}
+      PISTON_RUN_CPU_TIME_MS: ${PISTON_RUN_CPU_TIME_MS:-3000}
+      PISTON_COMPILE_MEMORY_LIMIT_BYTES: ${PISTON_COMPILE_MEMORY_LIMIT_BYTES:-536870912}
+      PISTON_RUN_MEMORY_LIMIT_BYTES: ${PISTON_RUN_MEMORY_LIMIT_BYTES:-134217728}
+      PISTON_HTTP_TIMEOUT_SECONDS: ${PISTON_HTTP_TIMEOUT_SECONDS:-45}
+      PISTON_CONNECT_TIMEOUT_SECONDS: ${PISTON_CONNECT_TIMEOUT_SECONDS:-3}
+    mem_limit: 768m
+    cpus: 2.0
+    pids_limit: 128
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=32m
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    networks: [runner-internal]
     depends_on:
       redis:
         condition: service_healthy
@@ -87,6 +184,106 @@ services:
         condition: service_started
     restart: unless-stopped
     stop_grace_period: 20s
+
+  # Narrow Docker API gateway. It validates exact container/network templates;
+  # the database worker no longer receives the full host Docker socket.
+  docker-gateway:
+    command: ["uvicorn", "app.docker_gateway:app", "--host", "0.0.0.0", "--port", "2375", "--limit-concurrency", "8", "--backlog", "32", "--timeout-keep-alive", "3"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RUNNER_PYTHON_BASE_IMAGE: ${RUNNER_PYTHON_BASE_IMAGE:-python:3.12-slim}
+    user: "0:0"
+    read_only: true
+    mem_limit: 128m
+    cpus: 0.25
+    pids_limit: 64
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=8m
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+      RUNNER_DOCKER_GATEWAY_TOKEN: ${RUNNER_DOCKER_GATEWAY_TOKEN:?Set RUNNER_DOCKER_GATEWAY_TOKEN to a random secret of at least 32 characters}
+      RUNNER_DATABASE_MYSQL_IMAGE: ${RUNNER_DATABASE_MYSQL_IMAGE:-mysql:8.4.13}
+      RUNNER_DATABASE_POSTGRES_IMAGE: ${RUNNER_DATABASE_POSTGRES_IMAGE:-postgres:17.11-bookworm}
+      RUNNER_DATABASE_WORKER_CONTAINER: codeleaf-runner-database-worker
+      DOCKER_GATEWAY_API_VERSION: ${RUNNER_DATABASE_DOCKER_API_VERSION:-1.45}
+      RUNNER_DOCKER_GATEWAY_SOCKET: /var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    expose: ["2375"]
+    networks: [docker-control]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:2375/health/live', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # The only application process allowed to orchestrate disposable DB containers.
+  # It has no host socket: Docker operations pass through the strict gateway above.
+  database-worker:
+    container_name: codeleaf-runner-database-worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RUNNER_PYTHON_BASE_IMAGE: ${RUNNER_PYTHON_BASE_IMAGE:-python:3.12-slim}
+    command: ["python", "-m", "app.database_worker"]
+    user: "10001:10001"
+    read_only: true
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 1.0
+    pids_limit: 128
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m
+    cap_drop: ["ALL"]
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+      REDIS_URL: redis://redis:6379/0
+      PISTON_BASE_URL: http://piston:2000
+      PISTON_HTTP_TIMEOUT_SECONDS: ${PISTON_HTTP_TIMEOUT_SECONDS:-45}
+      PISTON_CONNECT_TIMEOUT_SECONDS: ${PISTON_CONNECT_TIMEOUT_SECONDS:-3}
+      DATABASE_EXECUTION_ENABLED: ${DATABASE_EXECUTION_ENABLED:-true}
+      RUNNER_DATABASE_MAX_QUERY_BYTES: ${RUNNER_DATABASE_MAX_QUERY_BYTES:-65536}
+      RUNNER_DATABASE_MAX_SETUP_BYTES: ${RUNNER_DATABASE_MAX_SETUP_BYTES:-131072}
+      RUNNER_DATABASE_MAX_ROWS: ${RUNNER_DATABASE_MAX_ROWS:-100}
+      RUNNER_DATABASE_MAX_RESULT_BYTES: ${RUNNER_DATABASE_MAX_RESULT_BYTES:-65536}
+      RUNNER_DATABASE_QUERY_TIMEOUT_SECONDS: ${RUNNER_DATABASE_QUERY_TIMEOUT_SECONDS:-3}
+      RUNNER_DATABASE_STARTUP_TIMEOUT_SECONDS: ${RUNNER_DATABASE_STARTUP_TIMEOUT_SECONDS:-20}
+      RUNNER_DATABASE_JOB_TIMEOUT_SECONDS: ${RUNNER_DATABASE_JOB_TIMEOUT_SECONDS:-35}
+      RUNNER_DATABASE_MAX_ACTIVE_PER_USER: ${RUNNER_DATABASE_MAX_ACTIVE_PER_USER:-2}
+      RUNNER_DATABASE_JOBS_PER_MINUTE: ${RUNNER_DATABASE_JOBS_PER_MINUTE:-6}
+      RUNNER_DATABASE_MAX_QUEUE_DEPTH: ${RUNNER_DATABASE_MAX_QUEUE_DEPTH:-100}
+      RUNNER_DATABASE_JOB_TTL_SECONDS: ${RUNNER_DATABASE_JOB_TTL_SECONDS:-86400}
+      RUNNER_DATABASE_WORKER_CONCURRENCY: ${RUNNER_DATABASE_WORKER_CONCURRENCY:-2}
+      RUNNER_DATABASE_DOCKER_SOCKET: http://docker-gateway:2375
+      RUNNER_DOCKER_GATEWAY_TOKEN: ${RUNNER_DOCKER_GATEWAY_TOKEN:?Set RUNNER_DOCKER_GATEWAY_TOKEN to a random secret of at least 32 characters}
+      RUNNER_DATABASE_DOCKER_API_VERSION: ${RUNNER_DATABASE_DOCKER_API_VERSION:-1.45}
+      RUNNER_DATABASE_WORKER_CONTAINER: codeleaf-runner-database-worker
+      RUNNER_DATABASE_POSTGRES_IMAGE: ${RUNNER_DATABASE_POSTGRES_IMAGE:-postgres:17.11-bookworm}
+      RUNNER_DATABASE_MYSQL_IMAGE: ${RUNNER_DATABASE_MYSQL_IMAGE:-mysql:8.4.13}
+    networks: [runner-internal, docker-control]
+    depends_on:
+      redis:
+        condition: service_healthy
+      piston:
+        condition: service_started
+      docker-gateway:
+        condition: service_healthy
+    restart: unless-stopped
+    stop_grace_period: 30s
+
+networks:
+  runner-internal:
+    internal: true
+  docker-control:
+    internal: true
 
 volumes:
   redis_data:

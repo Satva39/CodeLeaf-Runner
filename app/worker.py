@@ -19,6 +19,7 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s %(message)s",
 )
 logger = logging.getLogger("codeleaf-runner.worker")
+WORKER_HEARTBEAT_KEY = "codeleaf:runner:worker:heartbeat"
 
 
 async def ensure_consumer_group(redis: Any, response_error_type: type[Exception]) -> None:
@@ -43,15 +44,21 @@ async def process_message(
     settings,
     message_id: str,
     fields: dict[str, Any],
+    worker_id: str = "worker",
 ) -> None:
     job_id = str(fields.get("job_id", ""))
     if not job_id:
         await acknowledge_and_delete(redis, message_id)
         return
 
-    job = await set_job_running(redis, job_id)
+    lease_seconds = max(90, int(settings.piston_http_timeout_seconds * 2) + 15)
+    job = await set_job_running(redis, job_id, worker_id=worker_id, lease_seconds=lease_seconds)
     if not job:
         await acknowledge_and_delete(redis, message_id)
+        return
+    if job["status"] == "busy":
+        # Another worker still holds the execution lease. Keep the stream item
+        # pending; it will become reclaimable after the lease expires.
         return
     if job["status"] != "running":
         # Includes a job cancelled while it was still in the queue.
@@ -130,8 +137,6 @@ async def process_message(
 
 async def run_worker() -> None:
     settings = get_settings()
-    if not settings.service_token_ready:
-        raise RuntimeError("CODELEAF_RUNNER_SERVICE_TOKEN must contain at least 32 characters.")
 
     try:
         from redis.asyncio import Redis
@@ -145,6 +150,12 @@ async def run_worker() -> None:
     claim_idle_ms = max(60000, int(settings.piston_http_timeout_seconds * 3000))
     claim_cursor = "0-0"
 
+    async def heartbeat() -> None:
+        while True:
+            await redis.set(WORKER_HEARTBEAT_KEY, str(time.time()), ex=30)
+            await asyncio.sleep(8)
+
+    heartbeat_task = asyncio.create_task(heartbeat(), name="execution-worker-heartbeat")
     try:
         await redis.ping()
         await ensure_consumer_group(redis, ResponseError)
@@ -176,7 +187,7 @@ async def run_worker() -> None:
                 if reclaimed and len(reclaimed) >= 2:
                     claim_cursor = reclaimed[0] or "0-0"
                     for message_id, fields in reclaimed[1]:
-                        task = asyncio.create_task(process_message(redis, piston, settings, message_id, fields))
+                        task = asyncio.create_task(process_message(redis, piston, settings, message_id, fields, consumer))
                         active_tasks.add(task)
                 if reclaimed and reclaimed[0] == "0-0":
                     claim_cursor = "0-0"
@@ -197,10 +208,13 @@ async def run_worker() -> None:
             )
             for _, entries in messages:
                 for message_id, fields in entries:
-                    task = asyncio.create_task(process_message(redis, piston, settings, message_id, fields))
+                    task = asyncio.create_task(process_message(redis, piston, settings, message_id, fields, consumer))
                     active_tasks.add(task)
 
     finally:
+        heartbeat_task.cancel()
+        await asyncio.gather(heartbeat_task, return_exceptions=True)
+        await redis.delete(WORKER_HEARTBEAT_KEY)
         for task in active_tasks:
             task.cancel()
         if active_tasks:

@@ -1,0 +1,405 @@
+{
+  "schema_version": 1,
+  "source": "Piston package catalogue: GET /api/v2/packages",
+  "selection_policy": "Install the highest available package version for each selected package unless an exact version is pinned in a lock file.",
+  "package_candidates": {
+    "c": [
+      "c",
+      "gcc"
+    ],
+    "cpp": [
+      "c++",
+      "gcc"
+    ],
+    "python": [
+      "python"
+    ],
+    "python2": [
+      "python2"
+    ],
+    "javascript": [
+      "node",
+      "javascript"
+    ],
+    "typescript": [
+      "typescript"
+    ],
+    "java": [
+      "java"
+    ],
+    "csharp": [
+      "csharp",
+      "csharp.net",
+      "dotnet"
+    ],
+    "go": [
+      "go"
+    ],
+    "rust": [
+      "rust"
+    ],
+    "php": [
+      "php"
+    ],
+    "ruby": [
+      "ruby"
+    ],
+    "kotlin": [
+      "kotlin"
+    ],
+    "swift": [
+      "swift"
+    ],
+    "dart": [
+      "dart"
+    ],
+    "r": [
+      "rscript",
+      "r"
+    ],
+    "bash": [
+      "bash"
+    ],
+    "powershell": [
+      "powershell"
+    ],
+    "lua": [
+      "lua"
+    ],
+    "perl": [
+      "perl"
+    ],
+    "scala": [
+      "scala"
+    ],
+    "groovy": [
+      "groovy"
+    ],
+    "haskell": [
+      "haskell"
+    ],
+    "elixir": [
+      "elixir"
+    ],
+    "erlang": [
+      "erlang"
+    ],
+    "clojure": [
+      "clojure"
+    ],
+    "ocaml": [
+      "ocaml"
+    ],
+    "fsharp": [
+      "fsharp.net"
+    ],
+    "fortran": [
+      "fortran"
+    ],
+    "cobol": [
+      "cobol"
+    ],
+    "pascal": [
+      "pascal"
+    ],
+    "raku": [
+      "raku"
+    ],
+    "julia": [
+      "julia"
+    ],
+    "octave": [
+      "octave"
+    ],
+    "nim": [
+      "nim"
+    ],
+    "zig": [
+      "zig"
+    ],
+    "crystal": [
+      "crystal"
+    ],
+    "vlang": [
+      "vlang"
+    ],
+    "d": [
+      "d"
+    ],
+    "freebasic": [
+      "freebasic"
+    ],
+    "basic": [
+      "basic"
+    ],
+    "basicnet": [
+      "basic.net"
+    ],
+    "cjam": [
+      "cjam"
+    ],
+    "brainfuck": [
+      "brainfuck"
+    ],
+    "befunge93": [
+      "befunge93"
+    ],
+    "awk": [
+      "awk"
+    ],
+    "dash": [
+      "dash"
+    ],
+    "sqlite": [
+      "sqlite3"
+    ],
+    "prolog": [
+      "prolog"
+    ],
+    "racket": [
+      "racket"
+    ],
+    "lisp": [
+      "lisp"
+    ],
+    "smalltalk": [
+      "smalltalk"
+    ],
+    "emacslisp": [
+      "emacs"
+    ],
+    "coffeescript": [
+      "coffeescript"
+    ],
+    "fsi": [
+      "fsi"
+    ],
+    "llvmir": [
+      "llvm_ir"
+    ],
+    "nasm": [
+      "nasm"
+    ],
+    "nasm64": [
+      "nasm64"
+    ],
+    "iverilog": [
+      "iverilog"
+    ],
+    "ponylang": [
+      "ponylang"
+    ],
+    "emojicode": [
+      "emojicode"
+    ],
+    "forte": [
+      "forte"
+    ],
+    "forth": [
+      "forth"
+    ],
+    "dragon": [
+      "dragon"
+    ],
+    "cow": [
+      "cow"
+    ],
+    "husk": [
+      "husk"
+    ],
+    "jelly": [
+      "jelly"
+    ],
+    "rockstar": [
+      "rockstar"
+    ],
+    "vyxal": [
+      "vyxal"
+    ],
+    "matl": [
+      "matl"
+    ],
+    "golfscript": [
+      "golfscript"
+    ],
+    "osabie": [
+      "osabie"
+    ],
+    "pyth": [
+      "pyth"
+    ],
+    "samarium": [
+      "samarium"
+    ],
+    "retina": [
+      "retina"
+    ],
+    "bqn": [
+      "bqn"
+    ],
+    "japt": [
+      "japt"
+    ],
+    "brachylog": [
+      "brachylog"
+    ],
+    "paradoc": [
+      "paradoc"
+    ],
+    "yeethon": [
+      "yeethon"
+    ],
+    "pure": [
+      "pure"
+    ]
+  },
+  "profiles": {
+    "core": {
+      "description": "Main languages for introductory programming and most CodeLeaf exercises.",
+      "languages": [
+        "c",
+        "cpp",
+        "python",
+        "javascript",
+        "java",
+        "csharp",
+        "go",
+        "rust",
+        "php",
+        "ruby",
+        "kotlin",
+        "swift",
+        "dart",
+        "r",
+        "bash",
+        "lua",
+        "perl",
+        "scala",
+        "sqlite"
+      ]
+    },
+    "extended": {
+      "description": "The core languages plus the additional languages listed in the CodeLeaf Runner registry.",
+      "languages": [
+        "c",
+        "cpp",
+        "python",
+        "python2",
+        "javascript",
+        "typescript",
+        "java",
+        "csharp",
+        "go",
+        "rust",
+        "php",
+        "ruby",
+        "kotlin",
+        "swift",
+        "dart",
+        "r",
+        "bash",
+        "powershell",
+        "lua",
+        "perl",
+        "scala",
+        "groovy",
+        "haskell",
+        "elixir",
+        "erlang",
+        "clojure",
+        "ocaml",
+        "fsharp",
+        "fortran",
+        "cobol",
+        "pascal",
+        "raku",
+        "julia",
+        "octave",
+        "nim",
+        "zig",
+        "crystal",
+        "vlang",
+        "d",
+        "freebasic",
+        "basic",
+        "basicnet",
+        "cjam",
+        "brainfuck",
+        "befunge93",
+        "awk",
+        "dash",
+        "sqlite",
+        "prolog",
+        "racket",
+        "lisp",
+        "smalltalk",
+        "emacslisp",
+        "coffeescript",
+        "fsi",
+        "llvmir",
+        "nasm",
+        "nasm64",
+        "iverilog",
+        "ponylang",
+        "emojicode",
+        "forte",
+        "forth",
+        "dragon",
+        "cow",
+        "husk",
+        "jelly",
+        "rockstar",
+        "vyxal",
+        "matl",
+        "golfscript",
+        "osabie",
+        "pyth",
+        "samarium",
+        "retina",
+        "bqn",
+        "japt",
+        "brachylog",
+        "paradoc",
+        "yeethon",
+        "pure"
+      ]
+    }
+  },
+  "all_profile_note": "The all profile is resolved dynamically from every unique language in the live Piston package catalogue. It is not hardcoded to this manifest.",
+  "package_runtime_aliases": {
+    "node": [
+      "javascript",
+      "js",
+      "node"
+    ],
+    "rscript": [
+      "rscript",
+      "r"
+    ],
+    "fsharp.net": [
+      "fsharp.net",
+      "fsharp"
+    ],
+    "basic.net": [
+      "basic.net",
+      "basicnet"
+    ],
+    "sqlite3": [
+      "sqlite3",
+      "sqlite"
+    ],
+    "gcc": [
+      "gcc",
+      "c",
+      "c++",
+      "cpp",
+      "g++"
+    ],
+    "dotnet": [
+      "dotnet",
+      "csharp",
+      "c#",
+      "csharp.net"
+    ]
+  }
+}

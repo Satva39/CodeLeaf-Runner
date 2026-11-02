@@ -16,7 +16,7 @@ class StrictModel(BaseModel):
 
 class CodeFile(StrictModel):
     name: str = Field(min_length=1, max_length=120)
-    content: str = Field(min_length=1, max_length=65536)
+    content: str = Field(min_length=1, max_length=262144)
 
     @field_validator("name")
     @classmethod
@@ -47,8 +47,8 @@ class CreateJobRequest(StrictModel):
     owner_id: str | None = Field(default=None, min_length=1, max_length=80)
     language: str = Field(min_length=1, max_length=40)
     version: str = Field(default="*", min_length=1, max_length=40)
-    source: str | None = Field(default=None, min_length=1, max_length=65536)
-    files: list[CodeFile] = Field(default_factory=list, max_length=10)
+    source: str | None = Field(default=None, min_length=1, max_length=262144)
+    files: list[CodeFile] = Field(default_factory=list, max_length=25)
     stdin: str = Field(default="", max_length=16384)
     args: list[str] = Field(default_factory=list, max_length=16)
 

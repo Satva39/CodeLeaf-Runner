@@ -45,6 +45,18 @@ class PistonClient:
             raise PistonUnavailable("Piston returned an invalid runtime catalogue.")
         return [item for item in payload if isinstance(item, dict)]
 
+    async def list_packages(self) -> list[dict[str, Any]]:
+        """Return Piston's administrator package catalogue (not exposed publicly)."""
+        try:
+            response = await self.client.get("/api/v2/packages")
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, ValueError) as exc:
+            raise PistonUnavailable("Piston package catalogue is unavailable.") from exc
+        if not isinstance(payload, list):
+            raise PistonUnavailable("Piston returned an invalid package catalogue.")
+        return [item for item in payload if isinstance(item, dict)]
+
     async def execute(
         self,
         *,

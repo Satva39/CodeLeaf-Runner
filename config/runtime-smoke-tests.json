@@ -1,0 +1,21 @@
+[
+  {"key":"c","language":"c","file":"main.c","source":"#include <stdio.h>\nint main(void) { puts(\"CODELEAF_RUNTIME_OK\"); return 0; }\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"cpp","language":"c++","file":"main.cpp","source":"#include <iostream>\nint main() { std::cout << \"CODELEAF_RUNTIME_OK\\n\"; return 0; }\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"python","language":"python","file":"main.py","source":"print('CODELEAF_RUNTIME_OK')\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"javascript","language":"javascript","file":"main.js","source":"console.log('CODELEAF_RUNTIME_OK');\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"java","language":"java","file":"Main.java","source":"public class Main { public static void main(String[] args) { System.out.println(\"CODELEAF_RUNTIME_OK\"); } }\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"csharp","language":"csharp","file":"Main.cs","source":"using System; class Program { static void Main() { Console.WriteLine(\"CODELEAF_RUNTIME_OK\"); } }\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"go","language":"go","file":"main.go","source":"package main\nimport \"fmt\"\nfunc main() { fmt.Println(\"CODELEAF_RUNTIME_OK\") }\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"rust","language":"rust","file":"main.rs","source":"fn main() { println!(\"CODELEAF_RUNTIME_OK\"); }\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"php","language":"php","file":"main.php","source":"<?php echo \"CODELEAF_RUNTIME_OK\\n\";\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"ruby","language":"ruby","file":"main.rb","source":"puts 'CODELEAF_RUNTIME_OK'\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"kotlin","language":"kotlin","file":"Main.kt","source":"fun main() { println(\"CODELEAF_RUNTIME_OK\") }\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"swift","language":"swift","file":"main.swift","source":"print(\"CODELEAF_RUNTIME_OK\")\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"dart","language":"dart","file":"main.dart","source":"void main() { print('CODELEAF_RUNTIME_OK'); }\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"r","language":"rscript","file":"main.r","source":"cat('CODELEAF_RUNTIME_OK\\n')\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"bash","language":"bash","file":"main.sh","source":"printf 'CODELEAF_RUNTIME_OK\\n'\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"lua","language":"lua","file":"main.lua","source":"print('CODELEAF_RUNTIME_OK')\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"perl","language":"perl","file":"main.pl","source":"print \"CODELEAF_RUNTIME_OK\\n\";\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"scala","language":"scala","file":"main.scala","source":"object Main extends App { println(\"CODELEAF_RUNTIME_OK\") }\n","expected":"CODELEAF_RUNTIME_OK"},
+  {"key":"sqlite","language":"sqlite3","file":"main.sql","source":"SELECT 'CODELEAF_RUNTIME_OK' AS result;\n","expected":"CODELEAF_RUNTIME_OK"}
+]

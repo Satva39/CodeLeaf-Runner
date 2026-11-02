@@ -1,0 +1,35 @@
+# LOCAL DEVELOPMENT ONLY.
+#
+# Production must use docker-compose.yml without this overlay.
+# The application and execution services remain on runner-internal.
+# Only the lightweight local proxies join runner-local-ingress.
+# Both published ports are restricted to Windows localhost.
+
+services:
+  api-local-proxy:
+    image: alpine/socat:latest
+    profiles:
+      - runtime-admin
+    depends_on:
+      api:
+        condition: service_healthy
+    command:
+      - TCP-LISTEN:8080,fork,reuseaddr
+      - TCP:api:8080
+    ports:
+      - "127.0.0.1:8080:8080"
+    networks:
+      - runner-internal
+      - runner-local-ingress
+    restart: unless-stopped
+
+  piston-admin:
+    ports:
+      - "127.0.0.1:2000:2000"
+    networks:
+      - runner-internal
+      - runner-local-ingress
+
+networks:
+  runner-local-ingress:
+    driver: bridge

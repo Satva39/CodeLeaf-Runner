@@ -1,0 +1,17 @@
+CodeLeaf Runner — Phase 5 local setup correction
+
+CHANGED
+- tests/test_security_phase.py
+  Corrected the assertion to match the actual HTTPS-origin validation message.
+
+ADDED
+- docker-compose.local.yml
+  Development-only API loopback port mapping. Does not publish Piston, Redis,
+  Docker gateway, or database services.
+- tests/test_local_compose_override.py
+  Guards the local override so it exposes only the API on 127.0.0.1.
+- docs/LOCAL_DEVELOPMENT.md
+  Exact Windows Docker Desktop startup and smoke-test commands, including the
+  existing localhost-only piston-admin profile.
+
+No application behavior, production Compose topology, credentials, or .env files changed.

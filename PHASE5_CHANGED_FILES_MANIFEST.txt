@@ -1,0 +1,33 @@
+CodeLeaf Runner — Phase 5 changed/added files
+Files: 28
+Extract into the existing CodeLeaf-Runner repository root, preserving paths.
+Do not overwrite .env or config/runtime-lock.json.
+
+CHANGED	.env.example
+CHANGED	Dockerfile
+CHANGED	README.md
+CHANGED	app/auth.py
+CHANGED	app/config.py
+CHANGED	app/database_jobs.py
+CHANGED	app/database_worker.py
+CHANGED	app/docker_engine.py
+ADDED	app/docker_gateway.py
+CHANGED	app/interactive.py
+CHANGED	app/jobs.py
+CHANGED	app/main.py
+ADDED	app/security.py
+CHANGED	app/worker.py
+CHANGED	docker-compose.yml
+CHANGED	docs/API.md
+ADDED	docs/PHASE_5_CHECKLIST.md
+ADDED	docs/PHASE_5_SECURITY_SCALING.md
+CHANGED	docs/RUNTIME_INSTALLATION.md
+CHANGED	docs/SECURITY.md
+ADDED	scripts/security_preflight.py
+CHANGED	tests/test_api_contract.py
+CHANGED	tests/test_database_phase.py
+ADDED	tests/test_docker_gateway.py
+CHANGED	tests/test_interactive_sessions.py
+ADDED	tests/test_phase5_compose_security.py
+CHANGED	tests/test_queue_safety.py
+ADDED	tests/test_security_phase.py

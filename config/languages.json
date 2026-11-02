@@ -1,83 +1,726 @@
 [
-  {"key":"c","name":"C","category":"compiled","extension":"c","piston_language":"c","aliases":["c-lang"]},
-  {"key":"cpp","name":"C++","category":"compiled","extension":"cpp","piston_language":"c++","aliases":["c++","cxx"]},
-  {"key":"python","name":"Python","category":"interpreted","extension":"py","piston_language":"python","aliases":["py"]},
-  {"key":"python2","name":"Python 2","category":"interpreted","extension":"py","piston_language":"python2","aliases":["py2"]},
-  {"key":"javascript","name":"JavaScript","category":"interpreted","extension":"js","piston_language":"javascript","aliases":["js","node","nodejs"]},
-  {"key":"typescript","name":"TypeScript","category":"compiled","extension":"ts","piston_language":"typescript","aliases":["ts"]},
-  {"key":"java","name":"Java","category":"compiled","extension":"java","piston_language":"java","aliases":[]},
-  {"key":"csharp","name":"C#","category":"compiled","extension":"cs","piston_language":"csharp","aliases":["c#","cs","csharp.net"]},
-  {"key":"go","name":"Go","category":"compiled","extension":"go","piston_language":"go","aliases":["golang"]},
-  {"key":"rust","name":"Rust","category":"compiled","extension":"rs","piston_language":"rust","aliases":["rs"]},
-  {"key":"php","name":"PHP","category":"interpreted","extension":"php","piston_language":"php","aliases":[]},
-  {"key":"ruby","name":"Ruby","category":"interpreted","extension":"rb","piston_language":"ruby","aliases":["rb"]},
-  {"key":"kotlin","name":"Kotlin","category":"compiled","extension":"kt","piston_language":"kotlin","aliases":["kt"]},
-  {"key":"swift","name":"Swift","category":"compiled","extension":"swift","piston_language":"swift","aliases":[]},
-  {"key":"dart","name":"Dart","category":"compiled","extension":"dart","piston_language":"dart","aliases":[]},
-  {"key":"r","name":"R","category":"interpreted","extension":"r","piston_language":"rscript","aliases":["rscript"]},
-  {"key":"bash","name":"Bash","category":"shell","extension":"sh","piston_language":"bash","aliases":["sh"]},
-  {"key":"powershell","name":"PowerShell","category":"shell","extension":"ps1","piston_language":"powershell","aliases":["pwsh"]},
-  {"key":"lua","name":"Lua","category":"interpreted","extension":"lua","piston_language":"lua","aliases":[]},
-  {"key":"perl","name":"Perl","category":"interpreted","extension":"pl","piston_language":"perl","aliases":[]},
-  {"key":"scala","name":"Scala","category":"compiled","extension":"scala","piston_language":"scala","aliases":[]},
-  {"key":"groovy","name":"Groovy","category":"interpreted","extension":"groovy","piston_language":"groovy","aliases":[]},
-  {"key":"haskell","name":"Haskell","category":"compiled","extension":"hs","piston_language":"haskell","aliases":["hs"]},
-  {"key":"elixir","name":"Elixir","category":"interpreted","extension":"ex","piston_language":"elixir","aliases":["ex"]},
-  {"key":"erlang","name":"Erlang","category":"compiled","extension":"erl","piston_language":"erlang","aliases":["erl"]},
-  {"key":"clojure","name":"Clojure","category":"interpreted","extension":"clj","piston_language":"clojure","aliases":["clj"]},
-  {"key":"ocaml","name":"OCaml","category":"compiled","extension":"ml","piston_language":"ocaml","aliases":["ml"]},
-  {"key":"fsharp","name":"F#","category":"compiled","extension":"fs","piston_language":"fsharp.net","aliases":["fs"]},
-  {"key":"fortran","name":"Fortran","category":"compiled","extension":"f90","piston_language":"fortran","aliases":["f90"]},
-  {"key":"cobol","name":"COBOL","category":"compiled","extension":"cob","piston_language":"cobol","aliases":[]},
-  {"key":"pascal","name":"Pascal","category":"compiled","extension":"pas","piston_language":"pascal","aliases":["delphi"]},
-  {"key":"raku","name":"Raku","category":"interpreted","extension":"raku","piston_language":"raku","aliases":["perl6"]},
-  {"key":"julia","name":"Julia","category":"interpreted","extension":"jl","piston_language":"julia","aliases":["jl"]},
-  {"key":"octave","name":"GNU Octave","category":"interpreted","extension":"m","piston_language":"octave","aliases":["matlab"]},
-  {"key":"nim","name":"Nim","category":"compiled","extension":"nim","piston_language":"nim","aliases":[]},
-  {"key":"zig","name":"Zig","category":"compiled","extension":"zig","piston_language":"zig","aliases":[]},
-  {"key":"crystal","name":"Crystal","category":"compiled","extension":"cr","piston_language":"crystal","aliases":[]},
-  {"key":"vlang","name":"V","category":"compiled","extension":"v","piston_language":"vlang","aliases":["v"]},
-  {"key":"d","name":"D","category":"compiled","extension":"d","piston_language":"d","aliases":[]},
-  {"key":"freebasic","name":"FreeBASIC","category":"compiled","extension":"bas","piston_language":"freebasic","aliases":["fb"]},
-  {"key":"basic","name":"BASIC","category":"compiled","extension":"bas","piston_language":"basic","aliases":[]},
-  {"key":"basicnet","name":"BASIC.NET","category":"compiled","extension":"vb","piston_language":"basic.net","aliases":[]},
-  {"key":"cjam","name":"CJam","category":"esoteric","extension":"cjam","piston_language":"cjam","aliases":[]},
-  {"key":"brainfuck","name":"Brainfuck","category":"esoteric","extension":"bf","piston_language":"brainfuck","aliases":["bf"]},
-  {"key":"befunge93","name":"Befunge-93","category":"esoteric","extension":"bf93","piston_language":"befunge93","aliases":[]},
-  {"key":"awk","name":"AWK","category":"shell","extension":"awk","piston_language":"awk","aliases":[]},
-  {"key":"dash","name":"Dash","category":"shell","extension":"sh","piston_language":"dash","aliases":[]},
-  {"key":"sqlite","name":"SQLite SQL","category":"database","extension":"sql","piston_language":"sqlite3","aliases":[]},
-  {"key":"prolog","name":"Prolog","category":"logic","extension":"pl","piston_language":"prolog","aliases":[]},
-  {"key":"racket","name":"Racket","category":"interpreted","extension":"rkt","piston_language":"racket","aliases":["rkt"]},
-  {"key":"lisp","name":"Lisp","category":"interpreted","extension":"lisp","piston_language":"lisp","aliases":[]},
-  {"key":"smalltalk","name":"Smalltalk","category":"interpreted","extension":"st","piston_language":"smalltalk","aliases":[]},
-  {"key":"emacslisp","name":"Emacs Lisp","category":"interpreted","extension":"el","piston_language":"emacs","aliases":["emacs-lisp"]},
-  {"key":"coffeescript","name":"CoffeeScript","category":"interpreted","extension":"coffee","piston_language":"coffeescript","aliases":["coffee"]},
-  {"key":"fsi","name":"F# Interactive","category":"interpreted","extension":"fsx","piston_language":"fsi","aliases":[]},
-  {"key":"llvmir","name":"LLVM IR","category":"compiled","extension":"ll","piston_language":"llvm_ir","aliases":["llvm-ir"]},
-  {"key":"nasm","name":"NASM","category":"compiled","extension":"asm","piston_language":"nasm","aliases":[]},
-  {"key":"nasm64","name":"NASM 64-bit","category":"compiled","extension":"asm","piston_language":"nasm64","aliases":[]},
-  {"key":"iverilog","name":"Verilog (Icarus)","category":"hardware","extension":"v","piston_language":"iverilog","aliases":["verilog"]},
-  {"key":"ponylang","name":"Pony","category":"compiled","extension":"pony","piston_language":"ponylang","aliases":["pony"]},
-  {"key":"emojicode","name":"Emojicode","category":"esoteric","extension":"emojic","piston_language":"emojicode","aliases":[]},
-  {"key":"forte","name":"Forte","category":"compiled","extension":"forte","piston_language":"forte","aliases":[]},
-  {"key":"forth","name":"Forth","category":"interpreted","extension":"fth","piston_language":"forth","aliases":[]},
-  {"key":"dragon","name":"Dragon","category":"esoteric","extension":"dragon","piston_language":"dragon","aliases":[]},
-  {"key":"cow","name":"COW","category":"esoteric","extension":"cow","piston_language":"cow","aliases":[]},
-  {"key":"husk","name":"Husk","category":"esoteric","extension":"hs","piston_language":"husk","aliases":[]},
-  {"key":"jelly","name":"Jelly","category":"esoteric","extension":"jelly","piston_language":"jelly","aliases":[]},
-  {"key":"rockstar","name":"Rockstar","category":"esoteric","extension":"rock","piston_language":"rockstar","aliases":[]},
-  {"key":"vyxal","name":"Vyxal","category":"esoteric","extension":"vyxal","piston_language":"vyxal","aliases":[]},
-  {"key":"matl","name":"MATL","category":"esoteric","extension":"matl","piston_language":"matl","aliases":[]},
-  {"key":"golfscript","name":"Golfscript","category":"esoteric","extension":"golfscript","piston_language":"golfscript","aliases":[]},
-  {"key":"osabie","name":"Osabie","category":"esoteric","extension":"osabie","piston_language":"osabie","aliases":[]},
-  {"key":"pyth","name":"Pyth","category":"esoteric","extension":"pyth","piston_language":"pyth","aliases":[]},
-  {"key":"samarium","name":"Samarium","category":"esoteric","extension":"samarium","piston_language":"samarium","aliases":[]},
-  {"key":"retina","name":"Retina","category":"esoteric","extension":"retina","piston_language":"retina","aliases":[]},
-  {"key":"bqn","name":"BQN","category":"esoteric","extension":"bqn","piston_language":"bqn","aliases":[]},
-  {"key":"japt","name":"Japt","category":"esoteric","extension":"japt","piston_language":"japt","aliases":[]},
-  {"key":"brachylog","name":"Brachylog","category":"esoteric","extension":"brl","piston_language":"brachylog","aliases":[]},
-  {"key":"paradoc","name":"Paradoc","category":"esoteric","extension":"paradoc","piston_language":"paradoc","aliases":[]},
-  {"key":"yeethon","name":"Yeethon","category":"esoteric","extension":"yeethon","piston_language":"yeethon","aliases":[]},
-  {"key":"pure","name":"Pure","category":"interpreted","extension":"pure","piston_language":"pure","aliases":[]}
+  {
+    "key": "c",
+    "name": "C",
+    "category": "compiled",
+    "extension": "c",
+    "piston_language": "c",
+    "aliases": [
+      "c-lang",
+      "gcc"
+    ]
+  },
+  {
+    "key": "cpp",
+    "name": "C++",
+    "category": "compiled",
+    "extension": "cpp",
+    "piston_language": "c++",
+    "aliases": [
+      "c++",
+      "cxx",
+      "g++"
+    ]
+  },
+  {
+    "key": "python",
+    "name": "Python",
+    "category": "interpreted",
+    "extension": "py",
+    "piston_language": "python",
+    "aliases": [
+      "py"
+    ]
+  },
+  {
+    "key": "python2",
+    "name": "Python 2",
+    "category": "interpreted",
+    "extension": "py",
+    "piston_language": "python2",
+    "aliases": [
+      "py2"
+    ]
+  },
+  {
+    "key": "javascript",
+    "name": "JavaScript",
+    "category": "interpreted",
+    "extension": "js",
+    "piston_language": "javascript",
+    "aliases": [
+      "js",
+      "node",
+      "nodejs"
+    ]
+  },
+  {
+    "key": "typescript",
+    "name": "TypeScript",
+    "category": "compiled",
+    "extension": "ts",
+    "piston_language": "typescript",
+    "aliases": [
+      "ts"
+    ]
+  },
+  {
+    "key": "java",
+    "name": "Java",
+    "category": "compiled",
+    "extension": "java",
+    "piston_language": "java",
+    "aliases": []
+  },
+  {
+    "key": "csharp",
+    "name": "C#",
+    "category": "compiled",
+    "extension": "cs",
+    "piston_language": "csharp",
+    "aliases": [
+      "c#",
+      "cs",
+      "csharp.net",
+      "dotnet"
+    ]
+  },
+  {
+    "key": "go",
+    "name": "Go",
+    "category": "compiled",
+    "extension": "go",
+    "piston_language": "go",
+    "aliases": [
+      "golang"
+    ]
+  },
+  {
+    "key": "rust",
+    "name": "Rust",
+    "category": "compiled",
+    "extension": "rs",
+    "piston_language": "rust",
+    "aliases": [
+      "rs"
+    ]
+  },
+  {
+    "key": "php",
+    "name": "PHP",
+    "category": "interpreted",
+    "extension": "php",
+    "piston_language": "php",
+    "aliases": []
+  },
+  {
+    "key": "ruby",
+    "name": "Ruby",
+    "category": "interpreted",
+    "extension": "rb",
+    "piston_language": "ruby",
+    "aliases": [
+      "rb"
+    ]
+  },
+  {
+    "key": "kotlin",
+    "name": "Kotlin",
+    "category": "compiled",
+    "extension": "kt",
+    "piston_language": "kotlin",
+    "aliases": [
+      "kt"
+    ]
+  },
+  {
+    "key": "swift",
+    "name": "Swift",
+    "category": "compiled",
+    "extension": "swift",
+    "piston_language": "swift",
+    "aliases": []
+  },
+  {
+    "key": "dart",
+    "name": "Dart",
+    "category": "compiled",
+    "extension": "dart",
+    "piston_language": "dart",
+    "aliases": []
+  },
+  {
+    "key": "r",
+    "name": "R",
+    "category": "interpreted",
+    "extension": "r",
+    "piston_language": "rscript",
+    "aliases": [
+      "rscript"
+    ]
+  },
+  {
+    "key": "bash",
+    "name": "Bash",
+    "category": "shell",
+    "extension": "sh",
+    "piston_language": "bash",
+    "aliases": [
+      "sh"
+    ]
+  },
+  {
+    "key": "powershell",
+    "name": "PowerShell",
+    "category": "shell",
+    "extension": "ps1",
+    "piston_language": "powershell",
+    "aliases": [
+      "pwsh"
+    ]
+  },
+  {
+    "key": "lua",
+    "name": "Lua",
+    "category": "interpreted",
+    "extension": "lua",
+    "piston_language": "lua",
+    "aliases": []
+  },
+  {
+    "key": "perl",
+    "name": "Perl",
+    "category": "interpreted",
+    "extension": "pl",
+    "piston_language": "perl",
+    "aliases": []
+  },
+  {
+    "key": "scala",
+    "name": "Scala",
+    "category": "compiled",
+    "extension": "scala",
+    "piston_language": "scala",
+    "aliases": []
+  },
+  {
+    "key": "groovy",
+    "name": "Groovy",
+    "category": "interpreted",
+    "extension": "groovy",
+    "piston_language": "groovy",
+    "aliases": []
+  },
+  {
+    "key": "haskell",
+    "name": "Haskell",
+    "category": "compiled",
+    "extension": "hs",
+    "piston_language": "haskell",
+    "aliases": [
+      "hs"
+    ]
+  },
+  {
+    "key": "elixir",
+    "name": "Elixir",
+    "category": "interpreted",
+    "extension": "ex",
+    "piston_language": "elixir",
+    "aliases": [
+      "ex"
+    ]
+  },
+  {
+    "key": "erlang",
+    "name": "Erlang",
+    "category": "compiled",
+    "extension": "erl",
+    "piston_language": "erlang",
+    "aliases": [
+      "erl"
+    ]
+  },
+  {
+    "key": "clojure",
+    "name": "Clojure",
+    "category": "interpreted",
+    "extension": "clj",
+    "piston_language": "clojure",
+    "aliases": [
+      "clj"
+    ]
+  },
+  {
+    "key": "ocaml",
+    "name": "OCaml",
+    "category": "compiled",
+    "extension": "ml",
+    "piston_language": "ocaml",
+    "aliases": [
+      "ml"
+    ]
+  },
+  {
+    "key": "fsharp",
+    "name": "F#",
+    "category": "compiled",
+    "extension": "fs",
+    "piston_language": "fsharp.net",
+    "aliases": [
+      "fs"
+    ]
+  },
+  {
+    "key": "fortran",
+    "name": "Fortran",
+    "category": "compiled",
+    "extension": "f90",
+    "piston_language": "fortran",
+    "aliases": [
+      "f90"
+    ]
+  },
+  {
+    "key": "cobol",
+    "name": "COBOL",
+    "category": "compiled",
+    "extension": "cob",
+    "piston_language": "cobol",
+    "aliases": []
+  },
+  {
+    "key": "pascal",
+    "name": "Pascal",
+    "category": "compiled",
+    "extension": "pas",
+    "piston_language": "pascal",
+    "aliases": [
+      "delphi"
+    ]
+  },
+  {
+    "key": "raku",
+    "name": "Raku",
+    "category": "interpreted",
+    "extension": "raku",
+    "piston_language": "raku",
+    "aliases": [
+      "perl6"
+    ]
+  },
+  {
+    "key": "julia",
+    "name": "Julia",
+    "category": "interpreted",
+    "extension": "jl",
+    "piston_language": "julia",
+    "aliases": [
+      "jl"
+    ]
+  },
+  {
+    "key": "octave",
+    "name": "GNU Octave",
+    "category": "interpreted",
+    "extension": "m",
+    "piston_language": "octave",
+    "aliases": [
+      "matlab"
+    ]
+  },
+  {
+    "key": "nim",
+    "name": "Nim",
+    "category": "compiled",
+    "extension": "nim",
+    "piston_language": "nim",
+    "aliases": []
+  },
+  {
+    "key": "zig",
+    "name": "Zig",
+    "category": "compiled",
+    "extension": "zig",
+    "piston_language": "zig",
+    "aliases": []
+  },
+  {
+    "key": "crystal",
+    "name": "Crystal",
+    "category": "compiled",
+    "extension": "cr",
+    "piston_language": "crystal",
+    "aliases": []
+  },
+  {
+    "key": "vlang",
+    "name": "V",
+    "category": "compiled",
+    "extension": "v",
+    "piston_language": "vlang",
+    "aliases": [
+      "v"
+    ]
+  },
+  {
+    "key": "d",
+    "name": "D",
+    "category": "compiled",
+    "extension": "d",
+    "piston_language": "d",
+    "aliases": []
+  },
+  {
+    "key": "freebasic",
+    "name": "FreeBASIC",
+    "category": "compiled",
+    "extension": "bas",
+    "piston_language": "freebasic",
+    "aliases": [
+      "fb"
+    ]
+  },
+  {
+    "key": "basic",
+    "name": "BASIC",
+    "category": "compiled",
+    "extension": "bas",
+    "piston_language": "basic",
+    "aliases": []
+  },
+  {
+    "key": "basicnet",
+    "name": "BASIC.NET",
+    "category": "compiled",
+    "extension": "vb",
+    "piston_language": "basic.net",
+    "aliases": []
+  },
+  {
+    "key": "cjam",
+    "name": "CJam",
+    "category": "esoteric",
+    "extension": "cjam",
+    "piston_language": "cjam",
+    "aliases": []
+  },
+  {
+    "key": "brainfuck",
+    "name": "Brainfuck",
+    "category": "esoteric",
+    "extension": "bf",
+    "piston_language": "brainfuck",
+    "aliases": [
+      "bf"
+    ]
+  },
+  {
+    "key": "befunge93",
+    "name": "Befunge-93",
+    "category": "esoteric",
+    "extension": "bf93",
+    "piston_language": "befunge93",
+    "aliases": []
+  },
+  {
+    "key": "awk",
+    "name": "AWK",
+    "category": "shell",
+    "extension": "awk",
+    "piston_language": "awk",
+    "aliases": []
+  },
+  {
+    "key": "dash",
+    "name": "Dash",
+    "category": "shell",
+    "extension": "sh",
+    "piston_language": "dash",
+    "aliases": []
+  },
+  {
+    "key": "sqlite",
+    "name": "SQLite SQL",
+    "category": "database",
+    "extension": "sql",
+    "piston_language": "sqlite3",
+    "aliases": []
+  },
+  {
+    "key": "prolog",
+    "name": "Prolog",
+    "category": "logic",
+    "extension": "pl",
+    "piston_language": "prolog",
+    "aliases": []
+  },
+  {
+    "key": "racket",
+    "name": "Racket",
+    "category": "interpreted",
+    "extension": "rkt",
+    "piston_language": "racket",
+    "aliases": [
+      "rkt"
+    ]
+  },
+  {
+    "key": "lisp",
+    "name": "Lisp",
+    "category": "interpreted",
+    "extension": "lisp",
+    "piston_language": "lisp",
+    "aliases": []
+  },
+  {
+    "key": "smalltalk",
+    "name": "Smalltalk",
+    "category": "interpreted",
+    "extension": "st",
+    "piston_language": "smalltalk",
+    "aliases": []
+  },
+  {
+    "key": "emacslisp",
+    "name": "Emacs Lisp",
+    "category": "interpreted",
+    "extension": "el",
+    "piston_language": "emacs",
+    "aliases": [
+      "emacs-lisp"
+    ]
+  },
+  {
+    "key": "coffeescript",
+    "name": "CoffeeScript",
+    "category": "interpreted",
+    "extension": "coffee",
+    "piston_language": "coffeescript",
+    "aliases": [
+      "coffee"
+    ]
+  },
+  {
+    "key": "fsi",
+    "name": "F# Interactive",
+    "category": "interpreted",
+    "extension": "fsx",
+    "piston_language": "fsi",
+    "aliases": []
+  },
+  {
+    "key": "llvmir",
+    "name": "LLVM IR",
+    "category": "compiled",
+    "extension": "ll",
+    "piston_language": "llvm_ir",
+    "aliases": [
+      "llvm-ir"
+    ]
+  },
+  {
+    "key": "nasm",
+    "name": "NASM",
+    "category": "compiled",
+    "extension": "asm",
+    "piston_language": "nasm",
+    "aliases": []
+  },
+  {
+    "key": "nasm64",
+    "name": "NASM 64-bit",
+    "category": "compiled",
+    "extension": "asm",
+    "piston_language": "nasm64",
+    "aliases": []
+  },
+  {
+    "key": "iverilog",
+    "name": "Verilog (Icarus)",
+    "category": "hardware",
+    "extension": "v",
+    "piston_language": "iverilog",
+    "aliases": [
+      "verilog"
+    ]
+  },
+  {
+    "key": "ponylang",
+    "name": "Pony",
+    "category": "compiled",
+    "extension": "pony",
+    "piston_language": "ponylang",
+    "aliases": [
+      "pony"
+    ]
+  },
+  {
+    "key": "emojicode",
+    "name": "Emojicode",
+    "category": "esoteric",
+    "extension": "emojic",
+    "piston_language": "emojicode",
+    "aliases": []
+  },
+  {
+    "key": "forte",
+    "name": "Forte",
+    "category": "compiled",
+    "extension": "forte",
+    "piston_language": "forte",
+    "aliases": []
+  },
+  {
+    "key": "forth",
+    "name": "Forth",
+    "category": "interpreted",
+    "extension": "fth",
+    "piston_language": "forth",
+    "aliases": []
+  },
+  {
+    "key": "dragon",
+    "name": "Dragon",
+    "category": "esoteric",
+    "extension": "dragon",
+    "piston_language": "dragon",
+    "aliases": []
+  },
+  {
+    "key": "cow",
+    "name": "COW",
+    "category": "esoteric",
+    "extension": "cow",
+    "piston_language": "cow",
+    "aliases": []
+  },
+  {
+    "key": "husk",
+    "name": "Husk",
+    "category": "esoteric",
+    "extension": "hs",
+    "piston_language": "husk",
+    "aliases": []
+  },
+  {
+    "key": "jelly",
+    "name": "Jelly",
+    "category": "esoteric",
+    "extension": "jelly",
+    "piston_language": "jelly",
+    "aliases": []
+  },
+  {
+    "key": "rockstar",
+    "name": "Rockstar",
+    "category": "esoteric",
+    "extension": "rock",
+    "piston_language": "rockstar",
+    "aliases": []
+  },
+  {
+    "key": "vyxal",
+    "name": "Vyxal",
+    "category": "esoteric",
+    "extension": "vyxal",
+    "piston_language": "vyxal",
+    "aliases": []
+  },
+  {
+    "key": "matl",
+    "name": "MATL",
+    "category": "esoteric",
+    "extension": "matl",
+    "piston_language": "matl",
+    "aliases": []
+  },
+  {
+    "key": "golfscript",
+    "name": "Golfscript",
+    "category": "esoteric",
+    "extension": "golfscript",
+    "piston_language": "golfscript",
+    "aliases": []
+  },
+  {
+    "key": "osabie",
+    "name": "Osabie",
+    "category": "esoteric",
+    "extension": "osabie",
+    "piston_language": "osabie",
+    "aliases": []
+  },
+  {
+    "key": "pyth",
+    "name": "Pyth",
+    "category": "esoteric",
+    "extension": "pyth",
+    "piston_language": "pyth",
+    "aliases": []
+  },
+  {
+    "key": "samarium",
+    "name": "Samarium",
+    "category": "esoteric",
+    "extension": "samarium",
+    "piston_language": "samarium",
+    "aliases": []
+  },
+  {
+    "key": "retina",
+    "name": "Retina",
+    "category": "esoteric",
+    "extension": "retina",
+    "piston_language": "retina",
+    "aliases": []
+  },
+  {
+    "key": "bqn",
+    "name": "BQN",
+    "category": "esoteric",
+    "extension": "bqn",
+    "piston_language": "bqn",
+    "aliases": []
+  },
+  {
+    "key": "japt",
+    "name": "Japt",
+    "category": "esoteric",
+    "extension": "japt",
+    "piston_language": "japt",
+    "aliases": []
+  },
+  {
+    "key": "brachylog",
+    "name": "Brachylog",
+    "category": "esoteric",
+    "extension": "brl",
+    "piston_language": "brachylog",
+    "aliases": []
+  },
+  {
+    "key": "paradoc",
+    "name": "Paradoc",
+    "category": "esoteric",
+    "extension": "paradoc",
+    "piston_language": "paradoc",
+    "aliases": []
+  },
+  {
+    "key": "yeethon",
+    "name": "Yeethon",
+    "category": "esoteric",
+    "extension": "yeethon",
+    "piston_language": "yeethon",
+    "aliases": []
+  },
+  {
+    "key": "pure",
+    "name": "Pure",
+    "category": "interpreted",
+    "extension": "pure",
+    "piston_language": "pure",
+    "aliases": []
+  }
 ]

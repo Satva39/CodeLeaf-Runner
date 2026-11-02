@@ -1,0 +1,18 @@
+CodeLeaf Runner - Phase 4 corrective patch
+
+Changed files:
+- app/database_execution.py
+  - Creates a private per-job PostgreSQL schema owned by the learner role.
+  - Removes ALTER OWNERSHIP of the built-in public schema.
+  - Restricts PostgreSQL search_path to the learner's private schema.
+- scripts/smoke_test_database_engines.py
+  - Generates a unique smoke-test owner per invocation to avoid exhausting
+    the persistent rate limit for a fixed diagnostic identity.
+- tests/test_database_phase.py
+  - Covers the new PostgreSQL schema bootstrap and unique smoke-test identity.
+- docs/PHASE_4_CHECKLIST.md
+  - Documents the corrected schema and smoke-test behavior.
+
+Apply this ZIP into the root of E:\CodeLeaf-Runner, preserving .env and
+config/runtime-lock.json. This patch does not start Phase 5; re-run the live
+SQLite/MySQL/PostgreSQL smoke test after rebuilding the services.

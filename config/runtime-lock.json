@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-02T03:39:24.072052+00:00",
+  "piston_base_url": "http://127.0.0.1:2000",
+  "packages": [
+    {
+      "language": "bash",
+      "version": "5.2.0"
+    },
+    {
+      "language": "dart",
+      "version": "3.0.1"
+    },
+    {
+      "language": "dotnet",
+      "version": "5.0.201"
+    },
+    {
+      "language": "gcc",
+      "version": "10.2.0"
+    },
+    {
+      "language": "go",
+      "version": "1.16.2"
+    },
+    {
+      "language": "java",
+      "version": "15.0.2"
+    },
+    {
+      "language": "kotlin",
+      "version": "1.8.20"
+    },
+    {
+      "language": "lua",
+      "version": "5.4.4"
+    },
+    {
+      "language": "node",
+      "version": "20.11.1"
+    },
+    {
+      "language": "perl",
+      "version": "5.36.0"
+    },
+    {
+      "language": "php",
+      "version": "8.2.3"
+    },
+    {
+      "language": "python",
+      "version": "3.12.0"
+    },
+    {
+      "language": "rscript",
+      "version": "4.1.1"
+    },
+    {
+      "language": "ruby",
+      "version": "3.0.1"
+    },
+    {
+      "language": "rust",
+      "version": "1.68.2"
+    },
+    {
+      "language": "scala",
+      "version": "3.2.2"
+    },
+    {
+      "language": "sqlite3",
+      "version": "3.36.0"
+    },
+    {
+      "language": "swift",
+      "version": "5.3.3"
+    }
+  ]
+}

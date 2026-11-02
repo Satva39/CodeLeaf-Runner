@@ -14,8 +14,13 @@ SECRET = "phase-one-api-test-secret-value-at-least-32-characters"
 class FakeRedis:
     def __init__(self):
         self.record = {}
+        self.rate = 0
 
-    async def eval(self, *_args):
+    async def eval(self, *args):
+        from app.security import RATE_LIMIT_LUA
+        if args and args[0] == RATE_LIMIT_LUA:
+            self.rate += 1
+            return [1, 60, self.rate]
         return ["ok", "1750000000000-0"]
 
     async def hgetall(self, _key):
@@ -24,7 +29,17 @@ class FakeRedis:
 
 class FakePiston:
     async def list_runtimes(self):
-        return [{"language": "c++", "version": "17.0.0", "aliases": ["cpp"]}]
+        return [
+            {"language": "c++", "version": "17.0.0", "aliases": ["cpp"]},
+            {"language": "javascript", "version": "22.0.0", "aliases": ["js"], "runtime": "node"},
+        ]
+
+    async def list_packages(self):
+        return [
+            {"language": "c++", "language_version": "17.0.0", "installed": True},
+            {"language": "node", "language_version": "22.0.0", "installed": True},
+            {"language": "python", "language_version": "3.12.0", "installed": False},
+        ]
 
 
 def request(method: str, url: str, **kwargs):
@@ -152,3 +167,27 @@ def test_job_routes_reject_non_uuid_job_identifiers(monkeypatch):
         headers={"X-Runner-Key": SECRET, "X-CodeLeaf-User": "learner-00001234"},
     )
     assert response.status_code == 422
+
+
+def test_runtime_status_reports_live_runtime_and_package_counts(monkeypatch):
+    setup_api(monkeypatch)
+    response = request(
+        "GET",
+        "/v1/runtime-status",
+        headers={"X-Runner-Key": SECRET},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["installed_runtime_count"] == 2
+    assert data["package_catalogue_version_count"] == 3
+    assert data["installed_package_version_count"] == 2
+    languages = {item["key"]: item for item in data["languages"]}
+    assert languages["cpp"]["available"] is True
+    assert languages["javascript"]["runtime_kind"] == "node"
+    assert languages["python"]["available"] is False
+
+
+def test_runtime_status_requires_runner_service_auth(monkeypatch):
+    setup_api(monkeypatch)
+    response = request("GET", "/v1/runtime-status")
+    assert response.status_code == 401

@@ -102,9 +102,12 @@ async def readiness(request: Request) -> dict[str, Any]:
     except Exception:
         checks["redis"] = "unavailable"
     try:
+        # Runtime readiness must depend only on installed local runtimes.
+        # Piston's /api/v2/packages endpoint fetches its catalogue from GitHub;
+        # that optional package-management dependency can fail independently
+        # and must not take an otherwise executable Runner node out of service.
         runtimes = await piston.list_runtimes()
-        packages = await piston.list_packages()
-        checks["piston"] = f"ok:{len(runtimes)}_runtimes:{len(packages)}_package_versions"
+        checks["piston"] = f"ok:{len(runtimes)}_runtimes"
     except PistonUnavailable:
         checks["piston"] = "unavailable"
     try:
@@ -171,8 +174,11 @@ async def runtime_status(request: Request) -> dict[str, Any]:
     """Return operational counts from Piston without exposing its admin API."""
     _, piston = request_services(request)
     try:
+        # This operational endpoint reports execution readiness, not the
+        # remote package-install catalogue. Avoid Piston /api/v2/packages:
+        # it requires outbound GitHub access and is not needed to execute
+        # already-installed runtimes.
         runtimes = await piston.list_runtimes()
-        packages = await piston.list_packages()
     except PistonUnavailable as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 
@@ -180,15 +186,13 @@ async def runtime_status(request: Request) -> dict[str, Any]:
         public_language(entry, runtime_matches(entry, runtimes))
         for entry in load_registry().values()
     ]
-    installed_package_versions = sum(1 for item in packages if item.get("installed"))
     return {
         "provider": "codeleaf-runner",
         "engine": "piston",
         "registry_language_count": len(items),
         "installed_language_count": sum(1 for item in items if item["available"]),
         "installed_runtime_count": len(runtimes),
-        "package_catalogue_version_count": len(packages),
-        "installed_package_version_count": installed_package_versions,
+        "package_catalogue_status": "not_queried",
         "languages": items,
     }
 

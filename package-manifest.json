@@ -1,0 +1,34 @@
+{
+  "package": "CodeLeaf Runner ARM64 / Oracle validation patch v4",
+  "schema_version": 3,
+  "patch_type": "additive-only",
+  "target": "linux/arm64",
+  "oracle_target": "OCI Ampere A1 / ARM64 Linux",
+  "upstream": {
+    "piston_repository": "https://github.com/engineer-man/piston",
+    "piston_commit": "de2b365ac759670a3a0d13ea208a0869a92c7e64",
+    "isolate_repository": "https://github.com/envicutor/isolate",
+    "isolate_commit": "af6db68042c3aa0ded80787fbb78bc0846ea2114"
+  },
+  "image": "codeleaf-piston:arm64-validation",
+  "does_not_create_cloud_resources": true,
+  "does_not_modify_existing_runner_files": true,
+  "required_gates": [
+    "external-image-arm64-manifests",
+    "target-platform-isolate-build",
+    "target-platform-node-native-addon-build",
+    "oci-image-architecture",
+    "node-process-architecture",
+    "isolate-elf-machine",
+    "piston-http-api",
+    "installed-runtime-elf-architecture",
+    "runner-runtime-smoke-tests",
+    "database-engine-smoke-tests",
+    "native-oci-arm64-cgroup-v2"
+  ],
+  "validation_fixes": [
+    "isolate-config-file-assertion-v3",
+    "idempotent-docker-container-and-volume-cleanup-v4",
+    "preserve-original-smoke-test-error-v4"
+  ]
+}

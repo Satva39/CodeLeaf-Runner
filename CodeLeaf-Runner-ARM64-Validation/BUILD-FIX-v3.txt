@@ -1,0 +1,36 @@
+CODELEAF RUNNER ARM64 VALIDATION — BUILD FIX V3
+================================================
+
+Your previous build successfully compiled and installed Isolate. The failure
+was in the validation command immediately after `make install`: the upstream
+install step writes `/usr/local/etc/isolate` as a FILE (the `default.cf`
+configuration), but the package incorrectly checked it with `test -d`
+(directory).
+
+This version corrects that single incorrect check to `test -f`, keeps the
+ARM64 ELF check, and verifies `/var/local/lib/isolate` remains a directory.
+The warning about pkg-config not finding libsystemd was not the fatal step in
+your pasted log: the compile/install commands completed before the shell
+reached the incorrect file-vs-directory assertion.
+
+WHAT YOUR LOG ALREADY PROVED
+----------------------------
+- Docker daemon is Linux x86_64 with cgroup v2.
+- Buildx advertises linux/arm64.
+- All seven required external image references advertise ARM64 manifests.
+- The pinned Isolate source compiled and its binary/config were installed in
+  the emulated ARM64 build stage.
+
+WHAT IS NOT PROVEN YET
+----------------------
+- The custom Piston image has not completed building.
+- The temporary image/API smoke test has not run.
+- Native ARM64 OCI behavior has not been tested.
+
+NEXT ACTION
+-----------
+Extract this v3 archive into the existing `E:\CodeLeaf-Runner` directory,
+overwriting only the additive `CodeLeaf-Runner-ARM64-Validation` folder.
+Then run `INSTALL-AND-CHECK.ps1` again. Use the same command sequence from
+`PATCH-INSTRUCTIONS.txt`. Do not run full-stack provisioning until the image
+build and image smoke test both pass.

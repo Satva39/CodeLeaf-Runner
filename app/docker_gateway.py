@@ -288,9 +288,27 @@ async def proxy_docker_api(path: str, request: Request):
         return JSONResponse({"message": "Docker API operation is outside the CodeLeaf database-worker allowlist."}, status_code=403)
 
     try:
-        headers = {}
-        content = await request.body() if method == "POST" and body is None else None
-        response = await client.request(method, route, params=query, content=content if content else (json.dumps(body).encode() if body is not None else None), headers=headers, timeout=300.0 if suffix == "/images/create" else None)
+        if body is not None:
+            content = json.dumps(body, separators=(",", ":")).encode("utf-8")
+        elif method == "POST":
+            content = await request.body()
+        else:
+            content = None
+    
+        headers = (
+            {"Content-Type": "application/json"}
+            if content
+            else {}
+        )
+    
+        response = await client.request(
+            method,
+            route,
+            params=query,
+            content=content,
+            headers=headers,
+            timeout=300.0 if suffix == "/images/create" else None,
+        )
     except httpx.HTTPError:
         return JSONResponse({"message": "Docker Engine is unavailable through the restricted gateway."}, status_code=502)
     response_body = await response.aread()

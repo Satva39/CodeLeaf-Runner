@@ -1,0 +1,66 @@
+CODELEAF RUNNER — ARM64 / ORACLE VALIDATION PATCH (V4)
+================================================
+
+This archive is an additive patch. It does not modify any existing Runner file.
+This v4 corrects the v3 validation-script cleanup bug; see BUILD-FIX-v4.txt. The v3 package already built the ARM64 image successfully, but its validator failed while cleaning up an absent temporary volume.
+
+WHY THE EARLIER COMMANDS FAILED
+-------------------------------
+PowerShell reported "term not recognized" because the path you invoked did not
+exist under E:\CodeLeaf-Runner. The earlier ZIP also omitted
+validate-base-image-manifests.ps1 and used BUILDPLATFORM for the Isolate
+compiler stage. This replacement includes the missing script and fixes the
+target-architecture build stages.
+
+STEP A — PLACE AND EXTRACT
+--------------------------
+1. Download CodeLeaf-Runner-ARM64-Validation-v4.zip.
+2. Move the ZIP into E:\CodeLeaf-Runner.
+3. Open PowerShell:
+
+   cd E:\CodeLeaf-Runner
+   Expand-Archive -LiteralPath .\CodeLeaf-Runner-ARM64-Validation-v4.zip -DestinationPath . -Force
+   Test-Path .\CodeLeaf-Runner-ARM64-Validation\INSTALL-AND-CHECK.ps1
+
+The final command must return True.
+
+STEP B — RUN THE LOCAL BUILD + IMAGE CHECK
+------------------------------------------
+   Set-ExecutionPolicy -Scope Process Bypass
+   & .\CodeLeaf-Runner-ARM64-Validation\INSTALL-AND-CHECK.ps1
+
+This checks Docker/Buildx, remote ARM64 manifests, builds the custom Piston
+image, checks its architecture, starts a temporary container, tests the
+Piston HTTP endpoints, and removes the temporary test container/volume.
+
+STEP C — RUN THE COMPLETE RUNNER STACK
+--------------------------------------
+Read docs\ARM64_VALIDATION.md sections 3–5. Use the existing .env file.
+Do not overwrite or commit .env. Keep the existing x86-64 runtime lock file;
+the ARM64 runtime lock must be config/runtime-lock.arm64.json.
+
+STEP D — OCI NATIVE VALIDATION
+------------------------------
+Do not create an Oracle instance merely to test the ZIP. First complete local
+image and runtime tests. When ready for the OCI stage, use an ARM64 Linux VM,
+run scripts/oracle-native-preflight.sh, then repeat the Piston, language and
+database tests on native ARM64 hardware.
+
+SCRIPTS INCLUDED
+----------------
+scripts/check-arm64-build-prerequisites.ps1
+scripts/validate-base-image-manifests.ps1
+scripts/build-arm64.ps1
+scripts/validate-arm64-image.ps1
+scripts/verify-installed-runtime-architecture.ps1
+BUILD-FIX-v4.txt
+scripts/oracle-native-preflight.sh
+docker-compose.arm64.yml
+piston-arm64/Dockerfile
+docs/ARM64_VALIDATION.md
+
+ROLLBACK
+--------
+Only newly added files are in the patch. Stop the overlay stack with the
+Compose command in docs\ARM64_VALIDATION.md. Do not remove existing data
+volumes or config/runtime-lock.json.

@@ -204,7 +204,19 @@ async def _wait_for_mysql(host: str, user: str, password: str, timeout: float) -
         finally:
             if connection is not None:
                 connection.close()
-    raise DatabaseExecutionFailure("MySQL sandbox did not become ready in time.") from last_error
+    error_code = (
+        last_error.args[0]
+        if last_error and last_error.args
+        and isinstance(last_error.args[0], int)
+        else None
+    )
+    error_type = type(last_error).__name__ if last_error else "UnknownError"
+    
+    detail = f" ({error_type}, MySQL error code {error_code})" if error_code is not None else f" ({error_type})"
+    
+    raise DatabaseExecutionFailure(
+        f"MySQL sandbox did not become ready in time{detail}."
+    ) from last_error
 
 
 def _postgres_stage_failure(stage: str, exc: Exception) -> DatabaseExecutionFailure:

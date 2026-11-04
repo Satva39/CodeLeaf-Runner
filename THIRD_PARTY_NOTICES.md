@@ -1,7 +1,11 @@
 # Third-party notices
 
-## Piston
+This validation package builds the Piston API from the official
+[engineer-man/piston](https://github.com/engineer-man/piston) repository. Piston
+identifies its license as MIT. The Piston source and license are fetched from the
+upstream repository at build time; they are not vendored in this ZIP.
 
-This project uses the Piston code execution engine as a separately deployed service dependency. Piston is maintained at <https://github.com/engineer-man/piston> and is licensed under the MIT License. This repository does not vendor or modify Piston source code; the runtime installer clones the upstream repository into the ignored `vendor/piston/` directory for its administrative CLI.
-
-When distributing or modifying Piston itself, preserve the upstream copyright and MIT license notice from the Piston repository. Review the upstream license file at <https://github.com/engineer-man/piston/blob/master/license>.
+The upstream Piston API Dockerfile builds Isolate from
+[envicutor/isolate](https://github.com/envicutor/isolate) at commit
+`af6db68042c3aa0ded80787fbb78bc0846ea2114`. Review and retain the upstream
+Isolate license and notices when distributing a built image.

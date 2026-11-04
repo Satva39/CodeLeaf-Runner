@@ -1,0 +1,39 @@
+# ARM64 overlay for the existing CodeLeaf Runner Compose topology.
+# Keep docker-compose.yml and docker-compose.local.yml unchanged.
+# The overlay does not publish new ports or change networks, credentials,
+# privileges, resource limits, volumes, or service dependencies.
+
+services:
+  redis:
+    platform: linux/arm64
+
+  piston:
+    image: codeleaf-piston:arm64-validation
+    platform: linux/arm64
+
+  piston-admin:
+    platform: linux/arm64
+
+  api:
+    platform: linux/arm64
+    build:
+      args:
+        RUNNER_PYTHON_BASE_IMAGE: python:3.12-slim
+
+  worker:
+    platform: linux/arm64
+    build:
+      args:
+        RUNNER_PYTHON_BASE_IMAGE: python:3.12-slim
+
+  docker-gateway:
+    platform: linux/arm64
+    build:
+      args:
+        RUNNER_PYTHON_BASE_IMAGE: python:3.12-slim
+
+  database-worker:
+    platform: linux/arm64
+    build:
+      args:
+        RUNNER_PYTHON_BASE_IMAGE: python:3.12-slim

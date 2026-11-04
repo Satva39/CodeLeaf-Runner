@@ -79,7 +79,12 @@ class DockerEngine:
             },
         )
         if response.status_code >= 400:
-            raise DockerEngineError("Docker could not create the private database network.")
+            detail = " ".join(response.text.split())[:600]
+            raise DockerEngineError(
+                f"Docker could not create the private database network "
+                f"(HTTP {response.status_code}): "
+                f"{detail or 'No response details'}"
+            )
         data = response.json()
         network_id = data.get("Id") if isinstance(data, dict) else None
         if not isinstance(network_id, str) or len(network_id) < 12:

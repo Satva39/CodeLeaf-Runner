@@ -1,0 +1,32 @@
+CODELEAF RUNNER ARM64 VALIDATION — V4 FIX
+========================================
+
+What v3 proved
+--------------
+The v3 log shows that Docker Buildx built and loaded the custom image and that
+Docker image metadata reported linux/arm64. The Isolate binary and Node native
+waitpid addon were compiled/installed in target-platform build stages.
+
+Why v3 stopped
+--------------
+The image validator attempted `docker volume rm` before verifying that the
+named temporary volume existed. With PowerShell's ErrorActionPreference set to
+Stop, Docker's expected "no such volume" stderr terminated the validator. The
+same unconditional removal in `finally` could then mask the original error.
+
+What v4 changes
+---------------
+- Checks Docker's container/volume lists before removing validation resources.
+- Uses an explicit checked Docker helper for volume creation and container run.
+- Makes final cleanup best-effort so it cannot mask the original validation
+  failure.
+- Collects Piston container logs if startup/API validation fails.
+- Reports each architecture/API gate separately.
+
+What v4 does NOT claim
+----------------------
+The v3 image-build success does not mean the Piston container/API smoke test
+has passed. v4 must still run the temporary container and verify its HTTP API.
+The Windows x86-64 + QEMU/WSL2 run is not native OCI Ampere certification and
+does not prove Isolate's production cgroup behavior or language runtime
+compatibility.
